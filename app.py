@@ -56,7 +56,6 @@ def ask():
 
 def get_chatgpt_response(user_input):
     try:
-        # Using the ChatCompletion API correctly with version 1.54.4
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -66,7 +65,6 @@ def get_chatgpt_response(user_input):
             max_tokens=150,
             temperature=0.7
         )
-        # Extract and return the assistant's reply from the response object
         return response.choices[0].message['content']
     except Exception as e:
         return str(e)
