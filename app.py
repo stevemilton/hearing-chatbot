@@ -18,191 +18,240 @@ app.config['SECRET_KEY'] = '72e586d9ddc99caecbf8d3e9b69d18e3'  # Replace with th
 @app.route('/')
 def index():
     return '''
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Hearing Health Chatbot</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f0f2f5;
-                color: #333;
-                text-align: center;
-                margin: 0;
-                padding: 0;
-            }
-            #chatContainer {
-                max-width: 600px;
-                margin: 50px auto;
-                background: #ffffff;
-                padding: 20px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                border-radius: 10px;
-                position: relative;
-            }
-            h1 {
-                color: #007bff;
-            }
-            #responseBox {
-                margin-top: 20px;
-                text-align: left;
-                max-height: 400px;
-                overflow-y: auto;
-                padding-right: 10px;
-            }
-            #botResponse {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-            .user-message, .bot-message {
-                padding: 10px;
-                border-radius: 15px;
-                width: fit-content;
-                max-width: 70%;
-                margin-bottom: 10px;
-                position: relative;
-            }
-            .user-message {
-                background-color: #007bff;
-                color: #fff;
-                align-self: flex-end;
-            }
-            .bot-message {
-                background-color: #f1f0f0;
-                color: #333;
-                align-self: flex-start;
-            }
-            .timestamp {
-                font-size: 0.8em;
-                color: #888;
-                position: absolute;
-                bottom: -18px;
-                right: 10px;
-            }
-            #typingIndicator {
-                font-style: italic;
-                color: #888;
-                display: none;
-                margin-top: 10px;
-            }
-            #followUpSection {
-                margin-top: 20px;
-            }
-            #userQuestion {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-            }
-            #askButton {
-                margin-top: 10px;
-                padding: 10px 20px;
-                background-color: #007bff;
-                color: #fff;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 16px;
-                transition: background-color 0.3s ease, transform 0.1s ease;
-            }
-            #askButton:hover {
-                background-color: #0056b3;
-                transform: scale(1.05);
-            }
-            #suggestedQuestions {
-                margin-top: 15px;
-            }
-            .suggested-button {
-                padding: 8px 15px;
-                background-color: #007bff;
-                color: #fff;
-                border: none;
-                border-radius: 5px;
-                margin: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
-            .suggested-button:hover {
-                background-color: #0056b3;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="chatContainer">
-            <h1>Hearing Health Chatbot</h1>
-            <div id="responseBox">
-                <h3>Response:</h3>
-                <div id="botResponse"></div>
-                <div id="typingIndicator">Bot is typing...</div>
-            </div>
-            <div id="suggestedQuestions"></div>
-            <div id="followUpSection">
-                <textarea id="userQuestion" rows="4" placeholder="How can I help today? Please enter your question..."></textarea>
-                <br>
-                <button id="askButton"><i class="fas fa-paper-plane"></i> Ask</button>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spoke Medical Hearing Health Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #chat-container {
+            width: 90%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: relative;
+        }
+
+        #chat-box {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-bottom: 50px;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+        }
+
+        .user-message {
+            background-color: #0084ff;
+            color: #fff;
+            text-align: right;
+            border-bottom-right-radius: 0;
+        }
+
+        .bot-message {
+            background-color: #f1f0f0;
+            color: #000;
+            text-align: left;
+            border-bottom-left-radius: 0;
+        }
+
+.timestamp {
+    color: white;  /* Set the timestamp color to white */
+    font-size: 0.8em;  /* Reduce the font size slightly */
+    opacity: 0.7;  /* Make it slightly transparent */
+    display: block;  /* Ensure timestamp appears on a new line */
+    margin-top: 5px;  /* Add some space between the message and the timestamp */
+}
+
+        #user-input {
+            width: calc(100% - 60px);
+            padding: 10px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+            margin-right: 10px;
+            box-sizing: border-box;
+        }
+
+        #send-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #0084ff;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #send-button:hover {
+            background-color: #006bbd;
+        }
+
+        #suggested-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .suggested-question {
+            background-color: #e9ecef;
+            color: #007bff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .suggested-question:hover {
+            background-color: #d4d9de;
+        }
+
+        #welcome-message {
+            font-size: 1em;
+            color: #333;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <h2>Spoke Medical Hearing Health Chat</h2>
+        <div id="welcome-message">
+            Welcome to our new service that gives you personalised ear health guidance.
+        </div>
+        <div id="chat-box"></div>
+
+        <div id="user-input-container">
+            <input type="text" id="user-input" placeholder="How can I help today? Please enter your question..." />
+            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
         </div>
 
-        <script>
-            $(document).ready(function() {
-                // When the user clicks the "Ask" button
-                $('#askButton').click(function() {
-                    const userQuestion = $('#userQuestion').val().trim();
-                    if (userQuestion !== "") {
-                        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        <div id="suggested-questions"></div>
+    </div>
 
-                        // Append user message with timestamp
-                        $('#botResponse').append("<div class='user-message'>" + userQuestion + "<span class='timestamp'>" + timestamp + "</span></div>");
-                        $('#userQuestion').val("");
-                        $('#userQuestion').attr("placeholder", "Please enter any follow-up question you may have");
+<script>
+    $(document).ready(function () {
+        // Function to append a message to the chat box
+        function appendMessage(content, sender) {
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const messageClass = sender === 'user' ? 'user-message' : 'bot-message';
 
-                        // Show typing indicator only after user input is valid
-                        $('#typingIndicator').show();
+            // Add paragraph formatting for bot messages
+            if (sender === 'bot') {
+                // Assume sentences are separated by periods followed by a space, and convert to paragraph tags
+                content = content.split('. ').map(sentence => `<p>${sentence.trim()}.</p>`).join("");
+            }
 
-                        // Send the user's question to the server
-                        $.post('/ask', { question: userQuestion }, function(data) {
-                            // Hide typing indicator
-                            $('#typingIndicator').hide();
+            $('#chat-box').append(
+                `<div class="message ${messageClass}">${content}<span class="timestamp">${timestamp}</span></div>`
+            );
+            $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+        }
 
-                            // Append bot message with paragraph structure and timestamp
-                            const botResponse = "<div class='bot-message'>" + data.response.replace(/\\n/g, '<br><br>') + "<span class='timestamp'>" + timestamp + "</span></div>";
-                            $('#botResponse').append(botResponse);
+        // This function handles the send operation for the message
+        function sendMessage(userQuestion) {
+            if (userQuestion !== "") {
+                appendMessage(userQuestion, 'user');
+                $('#user-input').val(''); // Clear the input field
+                $('#suggested-questions').empty();
 
-                            // Add suggested follow-up buttons if available
-                            generateSuggestedButtons(data.followUps);
+                // Add "Our expert is typing..." indicator
+                const typingIndicator = `<div class="bot-message typing-indicator">Our expert is typing...</div>`;
+                $('#chat-box').append(typingIndicator);
+                $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
 
-                            // Scroll to the bottom of the responseBox to keep latest message in view
-                            $('#responseBox').animate({ scrollTop: $('#responseBox').prop("scrollHeight")}, 500);
-                        });
+                console.log("Sending question to backend:", userQuestion); // Debugging log
+
+                $.post('/ask', { question: userQuestion }, function (data) {
+                    console.log("Response received from backend:", data); // Debugging log
+
+                    // Remove "Our expert is typing..." indicator
+                    $('.typing-indicator').remove();
+
+                    if (data.response) {
+                        appendMessage(data.response, 'bot');
+                    } else {
+                        appendMessage("Sorry, I didn't receive a valid response.", 'bot');
                     }
-                });
 
-                // When the user clicks a suggested follow-up button
-                $(document).on('click', '.suggested-button', function() {
-                    const suggestedQuestion = $(this).text();
-                    $('#userQuestion').val(suggestedQuestion);
-                    $('#askButton').click();
-                });
-
-                // Function to generate suggested follow-up buttons
-                function generateSuggestedButtons(followUps) {
-                    $('#suggestedQuestions').empty();
-                    if (followUps && followUps.length > 0) {
-                        followUps.forEach(function(question) {
-                            const button = "<button class='suggested-button'>" + question + "</button>";
-                            $('#suggestedQuestions').append(button);
-                        });
+                    // If follow-up questions exist, generate suggested buttons
+                    if (data.followUps && data.followUps.length > 0) {
+                        generateSuggestedButtons(data.followUps);
                     }
-                }
+
+                    // Change the input placeholder for follow-up questions
+                    $('#user-input').attr("placeholder", "Please enter any follow-up question you may have...");
+                }).fail(function () {
+                    console.error("Error: Unable to connect to the backend service.");
+
+                    // Remove "Our expert is typing..." indicator if request fails
+                    $('.typing-indicator').remove();
+                    
+                    appendMessage("Sorry, there was an error processing your request. Please try again.", 'bot');
+                });
+            }
+        }
+
+        // This function generates suggested follow-up questions
+        function generateSuggestedButtons(followUps) {
+            $('#suggested-questions').empty();
+            followUps.forEach(function (question) {
+                $('#suggested-questions').append(
+                    `<button class="suggested-question">${question}</button>`
+                );
             });
-        </script>
-    </body>
-    </html>
+        }
+
+        // Event handler for clicking the send button
+        $('#send-button').click(function () {
+            const userQuestion = $('#user-input').val().trim();
+            sendMessage(userQuestion);
+        });
+
+        // Event handler for pressing the Enter key
+        $('#user-input').keypress(function (e) {
+            if (e.which === 13) {
+                const userQuestion = $('#user-input').val().trim();
+                sendMessage(userQuestion);
+            }
+        });
+
+        // Event handler for clicking suggested questions
+        $('#suggested-questions').on('click', '.suggested-question', function () {
+            const followUpQuestion = $(this).text();
+            sendMessage(followUpQuestion);
+        });
+    });
+</script>
+</body>
+</html>
     '''
 
 @app.route('/ask', methods=['POST'])
