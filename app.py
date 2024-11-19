@@ -23,129 +23,230 @@ def index():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spoke Medical Hearing Health Chat</title>
+    <title>Spoke Medical Hearing Chat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
 
-        #chat-container {
-            width: 90%;
-            max-width: 500px;
-            background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            position: relative;
-        }
+    #chat-container {
+        width: 90%;
+        max-width: 500px;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        position: relative;
+    }
 
-        #chat-box {
-            max-height: 500px;
-            overflow-y: auto;
-            padding-bottom: 50px;
-        }
+    #chat-box {
+        max-height: 500px;
+        overflow-y: auto;
+        padding-bottom: 50px;
+    }
 
-        .message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 10px;
-        }
+    /* Sticky Header Style */
+    #sticky-header {
+        position: sticky;  /* Makes the header stick to the top */
+        top: 0;  /* Keeps it at the very top of the viewport */
+        background-color: #007bff;  /* Blue background to distinguish it */
+        color: #ffffff;  /* White text for better contrast */
+        text-align: center;
+        padding: 10px 20px;  /* Add some padding for breathing room */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);  /* Subtle shadow to make it pop out */
+        z-index: 1000;  /* Keeps it above other elements */
+    }
 
-        .user-message {
-            background-color: #0084ff;
-            color: #fff;
-            text-align: right;
-            border-bottom-right-radius: 0;
-        }
+    /* Chat Container Styles */
+    #chat-container {
+        width: 90%;
+        max-width: 500px;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-top: 20px;  /* Ensure there's some spacing below the sticky header */
+        position: relative;
+    }
 
-        .bot-message {
-            background-color: #f1f0f0;
-            color: #000;
-            text-align: left;
-            border-bottom-left-radius: 0;
-        }
+    /* Additional Styles for Better Consistency */
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f0f2f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+    }
+
+    /* Other existing styles (e.g., for messages, buttons, etc.) should remain here */
+
+.message {
+    display: flex;  /* Keeps the icon and message text aligned side by side */
+    align-items: flex-start;  /* Aligns the icon to the top of the message content */
+    padding: 15px;  /* Increased padding to ensure more space within the bubble */
+    margin: 10px 0;
+    border-radius: 10px;
+}
+
+.user-message {
+    background-color: #0084ff;  /* Blue for user messages */
+    color: #fff;
+    text-align: left;  /* Properly aligns the message text */
+    border-bottom-right-radius: 0;
+    padding: 10px 15px;  /* Add padding to top, bottom, left, and right to make it evenly spaced */
+    display: inline-block;  /* Keep message width only as wide as the content */
+    max-width: 80%;  /* Restrict the width to make it look nicer on larger screens */
+}
+
+.bot-message {
+    background-color: #f1f0f0;  /* Light gray for bot messages */
+    color: #000;
+    text-align: left;  /* Properly aligns the message text */
+    border-bottom-left-radius: 0;
+    padding: 10px 15px;  /* Add padding to top, bottom, left, and right to make it evenly spaced */
+    display: inline-block;  /* Keep message width only as wide as the content */
+    max-width: 80%;  /* Restrict the width to make it look nicer on larger screens */
+}
+
+.message i {
+    font-size: 1.5em;  /* Size of the icon */
+    margin-right: 10px;  /* Space between the icon and the text */
+    color: #007bff;  /* Color for the icons */
+    align-self: center;  /* Center the icon vertically within the message bubble */
+}
+
+.user-message i {
+    color: #ffffff;  /* Icon color for user messages (white) */
+}
+
+.message-content {
+    flex: 1;  /* Allow the content to use the remaining space */
+}
 
 .timestamp {
     color: white;  /* Set the timestamp color to white */
     font-size: 0.8em;  /* Reduce the font size slightly */
     opacity: 0.7;  /* Make it slightly transparent */
     display: block;  /* Ensure timestamp appears on a new line */
-    margin-top: 5px;  /* Add some space between the message and the timestamp */
+    margin-top: 5px;  /* Add space between the message text and timestamp */
 }
 
-        #user-input {
-            width: calc(100% - 60px);
-            padding: 10px;
-            border-radius: 25px;
-            border: 1px solid #ccc;
-            outline: none;
-            margin-right: 10px;
-            box-sizing: border-box;
-        }
+    #user-input {
+        width: calc(100% - 60px);
+        padding: 10px;
+        border-radius: 25px;
+        border: 1px solid #ccc;
+        outline: none;
+        margin-right: 10px;
+        box-sizing: border-box;
+    }
 
-        #send-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #0084ff;
-            border: none;
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+    #send-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #0084ff;
+        border: none;
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
 
-        #send-button:hover {
-            background-color: #006bbd;
-        }
+    #send-button:hover {
+        background-color: #006bbd;
+    }
 
-        #suggested-questions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
+    #suggested-questions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
 
-        .suggested-question {
-            background-color: #e9ecef;
-            color: #007bff;
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.3s ease;
-        }
+    .suggested-question {
+        background-color: #e9ecef;
+        color: #007bff;
+        padding: 8px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
 
-        .suggested-question:hover {
-            background-color: #d4d9de;
-        }
+    .suggested-question:hover {
+        background-color: #d4d9de;
+    }
 
-        #welcome-message {
-            font-size: 1em;
-            color: #333;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
+    #welcome-message {
+        font-size: 1em;
+        color: #333;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    /* Typing Indicator Animation */
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        font-size: 1em;
+        color: #888;  /* Light gray for "Our expert is typing..." */
+    }
+
+    .typing-indicator span {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin: 0 2px;
+        background-color: #888;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+        0% {
+            transform: translateY(0);
         }
-    </style>
+        50% {
+            transform: translateY(-5px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+</style>
 </head>
 <body>
+    <!-- Sticky Header with Welcome Message -->
+    <div id="sticky-header">
+        <h1>Spoke Medical Hearing Chat</h1>
+        <p>Welcome to our new service that gives you personalized ear health guidance.</p>
+    </div>
+
+    <!-- Chat Container -->
     <div id="chat-container">
-        <h2>Spoke Medical Hearing Health Chat</h2>
-        <div id="welcome-message">
-            Welcome to our new service that gives you personalised ear health guidance.
-        </div>
         <div id="chat-box"></div>
 
         <div id="user-input-container">
@@ -155,6 +256,7 @@ def index():
 
         <div id="suggested-questions"></div>
     </div>
+</body>
 
 <script>
     $(document).ready(function () {
@@ -163,14 +265,24 @@ def index():
             const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const messageClass = sender === 'user' ? 'user-message' : 'bot-message';
 
+            // Choose the icon based on the sender
+            const iconHTML = sender === 'user' ? 
+                '<i class="fas fa-user-circle"></i>' : 
+                '<i class="fas fa-stethoscope"></i>';
+
             // Add paragraph formatting for bot messages
             if (sender === 'bot') {
                 // Assume sentences are separated by periods followed by a space, and convert to paragraph tags
                 content = content.split('. ').map(sentence => `<p>${sentence.trim()}.</p>`).join("");
             }
 
+            // Append the message with the appropriate icon
             $('#chat-box').append(
-                `<div class="message ${messageClass}">${content}<span class="timestamp">${timestamp}</span></div>`
+                `<div class="message ${messageClass}">
+                    ${iconHTML}
+                    <div class="message-content">${content}</div>
+                    <span class="timestamp">${timestamp}</span>
+                </div>`
             );
             $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
         }
@@ -182,8 +294,12 @@ def index():
                 $('#user-input').val(''); // Clear the input field
                 $('#suggested-questions').empty();
 
-                // Add "Our expert is typing..." indicator
-                const typingIndicator = `<div class="bot-message typing-indicator">Our expert is typing...</div>`;
+                // Add "Our expert is typing..." indicator with animation
+                const typingIndicator = `
+                    <div class="bot-message typing-indicator">
+                        Our expert is typing
+                        <span></span><span></span><span></span>  <!-- Animated dots -->
+                    </div>`;
                 $('#chat-box').append(typingIndicator);
                 $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
 
